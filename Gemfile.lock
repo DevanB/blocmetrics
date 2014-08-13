@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    backports (3.6.0)
     bson (1.10.2)
     bson_ext (1.10.2)
       bson (~> 1.10.2)
@@ -16,6 +17,7 @@ GEM
     method_source (0.8.2)
     mongo (1.10.2)
       bson (= 1.10.2)
+    multi_json (1.10.1)
     pry (0.10.0)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -26,6 +28,8 @@ GEM
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
+    rack-test (0.6.2)
+      rack (>= 1.0)
     rspec (3.0.0)
       rspec-core (~> 3.0.0)
       rspec-expectations (~> 3.0.0)
@@ -42,6 +46,13 @@ GEM
       rack (~> 1.4)
       rack-protection (~> 1.4)
       tilt (~> 1.3, >= 1.3.4)
+    sinatra-contrib (1.4.2)
+      backports (>= 2.0)
+      multi_json
+      rack-protection
+      rack-test
+      sinatra (~> 1.4.0)
+      tilt (~> 1.3)
     slop (3.6.0)
     tilt (1.4.1)
 
@@ -55,3 +66,4 @@ DEPENDENCIES
   pry-debugger
   rspec
   sinatra
+  sinatra-contrib
