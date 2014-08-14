@@ -19,7 +19,7 @@ end
 class Database
   def initialize
     @db = Mongo::MongoClient.new("localhost", 27017).db('development')
-    @hash = @db.collection('pageCounts').find_one() 
+    @hash = @db.collection('pageCounts').find_one()
   end
 
   def get_page_count
