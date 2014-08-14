@@ -1,9 +1,6 @@
 require "sinatra/base"
 require "sinatra/reloader"
 require 'mongo'
-require 'json/ext'
-require 'pry'
-require 'pry-debugger'
 
 class App < Sinatra::Base
   configure :development do
