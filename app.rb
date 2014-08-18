@@ -1,35 +1,31 @@
 require "sinatra/base"
 require "sinatra/reloader"
-require 'mongo'
+require_relative 'database'
+
+$db = Database.new
 
 class App < Sinatra::Base
+  enable :sessions
+
   configure :development do
     register Sinatra::Reloader
   end
 
-  get "/"  do
-    db = Database.new
-    db.increment_page_count
-    "Hello World #{db.get_page_count}"
+  get '/'  do
+    # $db.increment_page_count
+    erb :root, :layout => :layout
   end
 
-end
-
-class Database
-  def initialize
-    @db = Mongo::MongoClient.new("localhost", 27017).db('development')
-    @hash = @db.collection('pageCounts').find_one()
+  get '/users/sign-up' do
+    erb :"users/sign-up", :layout => :layout
   end
 
-  def get_page_count
-    @hash["page_count"]
+  post '/users/sign-up' do
+    if params[:password] == params[:passwordConfirmation]
+      $db.insert_user(params[:email], params[:password])
+    else
+      "Wrong"
+    end
   end
-
-  def increment_page_count
-    @db.collection('pageCounts').update({"_id" => @hash["_id"]}, {"$inc" => {"page_count" => 1}})
-  end
-
-  def clear_page_count
-    @db.collection('pageCounts').update({"_id" => @hash["_id"]}, {"$set" => {"page_count" => 0}})
-  end
+  
 end

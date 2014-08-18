@@ -1,8 +1,10 @@
-require_relative '../app'
+require_relative '../../app'
 require 'spec_helper'
 require 'rack/test'
 require 'pry'
 require 'pry-debugger'
+require_relative '../../database'
+
 
 describe "App" do
   include Rack::Test::Methods
