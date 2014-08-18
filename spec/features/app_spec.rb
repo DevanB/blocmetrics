@@ -6,8 +6,9 @@ require 'pry-debugger'
 require_relative '../../database'
 
 
-describe "App" do
+describe "App", :type => :feature do
   include Rack::Test::Methods
+  Capybara.app = App
 
   before do
     db = Database.new
@@ -20,8 +21,8 @@ describe "App" do
 
   it "should increase page_count" do
     get '/'
-    expect(last_response.body).to eq("Hello World 1")
+    expect(last_response.body).to have_content("Hello World 1")
     get '/'
-    expect(last_response.body).to eq("Hello World 2")
+    expect(last_response.body).to have_content("Hello World 2")
   end 
 end

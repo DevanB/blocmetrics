@@ -12,7 +12,8 @@ class App < Sinatra::Base
   end
 
   get '/'  do
-    # $db.increment_page_count
+    $db.increment_page_count
+    @page_count = $db.get_page_count
     erb :root, :layout => :layout
   end
 
@@ -24,7 +25,7 @@ class App < Sinatra::Base
     if params[:password] == params[:passwordConfirmation]
       $db.insert_user(params[:email], params[:password])
     else
-      "Wrong"
+      #TODO - Redirect to Sign Up form with flash passwords do not match.
     end
   end
   
