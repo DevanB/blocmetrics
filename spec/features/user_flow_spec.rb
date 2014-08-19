@@ -17,16 +17,17 @@ describe "Users", :type => :feature do
     App
   end
 
-  it "should sign up and be redirected to sign in form" do
-    get '/'
+  it "should sign up and be redirected to sign in form if details are correct" do
+    visit '/'
     within(".user-info") do
       click_link "Sign Up"
     end
     
-    fill_in 'Email', with: 'devan.beitel@gmail.com'
-    fill_in 'Password', with: 'testpassword'
-    fill_in 'Password Confirmation', with: 'testpassword'
+    fill_in 'email', with: 'devan.beitel@gmail.com'
+    fill_in 'password', with: 'testpassword'
+    fill_in 'passwordConfirmation', with: 'testpassword'
     click_button 'Sign Up'
 
-  end 
+    expect(page).to have_content("Successfully signed up!")
+  end
 end
