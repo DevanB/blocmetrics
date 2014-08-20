@@ -1,18 +1,12 @@
 require_relative '../../app'
 require 'spec_helper'
-require 'rack/test'
-require 'pry'
-require 'pry-debugger'
-require_relative '../../database'
-
 
 describe "App", :type => :feature do
   include Rack::Test::Methods
   Capybara.app = App
 
   before do
-    db = Database.new
-    db.clear_page_count
+    MongoCleaner.clean
   end
 
   def app

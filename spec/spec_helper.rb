@@ -4,6 +4,20 @@
 # file to always be loaded, without a need to explicitly require it in any files.
 #
 require 'capybara/rspec'
+require_relative '../database'
+require 'pry'
+require 'pry-debugger'
+require 'rack/test'
+
+module MongoCleaner
+  def self.clean
+    db = Mongo::MongoClient.new("localhost", 27017).db('development')
+
+    collections = db.collections.select { |c| c.name !~ /^system\./ }
+    collections.each {|c| c.remove}
+  end
+end
+
 # Given that it is always loaded, you are encouraged to keep this file as
 # light-weight as possible. Requiring heavyweight dependencies from this file
 # will add to the boot time of your test suite on EVERY test run, even for an

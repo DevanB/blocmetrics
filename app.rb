@@ -20,25 +20,28 @@ class App < Sinatra::Base
   end
 
   get '/users/sign-up' do
-    erb :"users/sign-up", :layout => :layout
+    erb :"users/sign-up", :layout => :layout, :locals => { :email => "" }
   end
 
   post '/users/sign-up' do
-    #TODO - CHECK EMAIL FOR ALREADY IN USE?
+    if $db.check_email_for_signup(params[:email])
+      flash[:fatal] = "Email address already registered."
+      redirect to('/users/sign-up')
+      return
+    end
 
     if params[:password] == params[:passwordConfirmation]
       #TODO - ENCRYPT PASSWORD
       $db.insert_user(params[:email], params[:password])
-      flash[:notice] = "Successfully signed up!"
+      flash[:info] = "Successfully signed up!"
       redirect to("/users/sign-in")
     else
-      #TODO - CARRY OVER EMAIL, MAYBE IN SESSIONS?
-      flash[:error] = "Password and password confirmation do not match."
-      redirect to("/users/sign-up")
+      flash.now[:fatal] = "Password and password confirmation do not match."
+      erb :"/users/sign-up", :layout => :layout, :locals => { :email => params[:email] }
     end
   end
 
   get '/users/sign-in' do
-    erb "User Sign-In", :layout => :layout
+    erb :"users/sign-in", :layout => :layout
   end
 end

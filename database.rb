@@ -1,4 +1,4 @@
-require 'mongo' 
+require 'mongo'
 
 class Database
   def initialize
@@ -14,11 +14,11 @@ class Database
   end
 
   def increment_page_count
-    @db.collection('pageCounts').update({"_id" => hash["_id"]}, {"$inc" => {"page_count" => 1}})
+    @db.collection('pageCounts').update({}, {"$inc" => {"page_count" => 1}}, {upsert: true})
   end
 
-  def clear_page_count
-    @db.collection('pageCounts').update({"_id" => hash["_id"]}, {"$set" => {"page_count" => 0}})
+  def check_email_for_signup(email)
+    return true if @db.collection('users').find("email" => email).to_a.count > 0
   end
 
   def insert_user(email, password)
