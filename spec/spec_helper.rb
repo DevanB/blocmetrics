@@ -18,6 +18,8 @@ module MongoCleaner
   end
 end
 
+require_relative "support/user_flow_helpers.rb"
+
 # Given that it is always loaded, you are encouraged to keep this file as
 # light-weight as possible. Requiring heavyweight dependencies from this file
 # will add to the boot time of your test suite on EVERY test run, even for an
