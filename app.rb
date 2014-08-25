@@ -44,4 +44,25 @@ class App < Sinatra::Base
   get '/users/sign-in' do
     erb :"users/sign-in", :layout => :layout
   end
+
+  post '/users/sign-in' do    
+    if $db.check_signin_details(params[:email], params[:password])
+      session[:current_user_email] = params[:email]
+      flash[:info] = "Successfully signed in."
+      redirect to("/")
+    else
+      flash.now[:fatal] = "Email and/or password not valid. Please try again."
+      erb :"users/sign-in", :layout => :layout
+    end
+  end
+
+  post '/users/sign-out' do
+    if session[:current_user_email]
+      session[:current_user_email] = params[:email]
+      flash[:info] = "Successfully signed out."
+      redirect to("/")
+    else
+      flash.now[:info] = "Not Signed In"
+    end
+  end
 end

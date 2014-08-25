@@ -24,4 +24,9 @@ class Database
   def insert_user(email, password)
     @db.collection('users').insert({"email" => email, "password" => password})
   end
+
+  def check_signin_details(email, password)
+    record = @db.collection('users').find_one("email" => email)
+    record["password"] == password
+  end
 end
