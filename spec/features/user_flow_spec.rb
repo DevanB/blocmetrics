@@ -43,13 +43,8 @@ describe "Users", :type => :feature do
     goto_signup
     submit_signup("test@test.com", "testpassword", "testpassword")
 
-    within('.user-info') do
-      click_link "Sign In"
-    end
-
-    fill_in 'email', with: 'test@test.com'
-    fill_in 'password', with: 'testpassword'
-    click_button 'Sign In'
+    goto_signin
+    submit_signin("test@test.com", "testpassword")
 
     expect(page).to have_content("Successfully signed in.")
     expect(page).to have_content("Welcome test@test.com")
@@ -59,13 +54,8 @@ describe "Users", :type => :feature do
     goto_signup
     submit_signup("test@test.com", "testpassword", "testpassword")
 
-    within('.user-info') do
-      click_link "Sign In"
-    end
-
-    fill_in 'email', with: 'test@test.com'
-    fill_in 'password', with: 'badpassword'
-    click_button 'Sign In'
+    goto_signin
+    submit_signin("test@test.com", "badpassword")
 
     expect(page).to have_content("Email and/or password not valid. Please try again.")
   end
@@ -74,13 +64,8 @@ describe "Users", :type => :feature do
     goto_signup
     submit_signup("test@test.com", "testpassword", "testpassword")
 
-    within('.user-info') do
-      click_link "Sign In"
-    end
-
-    fill_in 'email', with: 'test@test.com'
-    fill_in 'password', with: 'testpassword'
-    click_button 'Sign In'
+    goto_signin
+    submit_signin("test@test.com", "testpassword")
 
     expect(page).to have_content("Successfully signed in.")
     expect(page).to have_content("Welcome test@test.com")
