@@ -12,4 +12,16 @@ module UserFlowHelpers
     fill_in 'passwordConfirmation', with: passwordConfirmation
     click_button 'Sign Up'
   end
+
+  def goto_signin
+    within('.user-info') do
+      click_link "Sign In"
+    end
+  end
+
+  def submit_signin(email, password)
+    fill_in 'email', with: email
+    fill_in 'password', with: password
+    click_button 'Sign In'
+  end
 end
