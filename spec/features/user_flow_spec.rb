@@ -40,11 +40,7 @@ describe "Users", :type => :feature do
   end
 
   it "should sign-in if credentials are correct and display user email and sign out option" do
-    goto_signup
-    submit_signup("test@test.com", "testpassword", "testpassword")
-
-    goto_signin
-    submit_signin("test@test.com", "testpassword")
+    signup_and_signin("test@test.com", "testpassword", "testpassword")
 
     expect(page).to have_content("Successfully signed in.")
     expect(page).to have_content("Welcome test@test.com")
@@ -72,11 +68,7 @@ describe "Users", :type => :feature do
   end
 
   it "should successfully sign out" do
-    goto_signup
-    submit_signup("test@test.com", "testpassword", "testpassword")
-
-    goto_signin
-    submit_signin("test@test.com", "testpassword")
+    signup_and_signin("test@test.com", "testpassword", "testpassword")
 
     expect(page).to have_content("Successfully signed in.")
     expect(page).to have_content("Welcome test@test.com")

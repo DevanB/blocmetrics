@@ -36,4 +36,11 @@ module UserFlowHelpers
     fill_in 'password', with: password
     click_button 'Sign In'
   end
+
+  def signup_and_signin(email, password, passwordConfirmation)
+    goto_signup
+    submit_signup(email, password, passwordConfirmation)
+    goto_signin
+    submit_signin(email, password)
+  end
 end
