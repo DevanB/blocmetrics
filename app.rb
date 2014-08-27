@@ -14,6 +14,13 @@ class App < Sinatra::Base
     also_reload 'database'
   end
 
+  before '/site/new' do
+    unless current_user
+      flash[:fatal] = "Not authorized. Please login first."
+      redirect to("/")
+    end
+  end
+  
   get '/'  do
     $db.increment_page_count
     @page_count = $db.get_page_count
@@ -92,7 +99,7 @@ class App < Sinatra::Base
 
   def create_unique_code
     code = SecureRandom.hex(18)
-    until $db.code_unique?(code)
+    until $db.code_unique?(code) do
       code = SecureRandom.hex(18)
     end
     code

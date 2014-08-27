@@ -37,4 +37,10 @@ describe "App", :type => :feature do
     expect(page).to have_content("Successfully added site.")
     expect(page).to have_content("http://www.test.com")
   end
+
+  it "should not allow user to create a site without being logged in" do
+    visit "/site/new"
+
+    expect(page).to have_content("Not authorized. Please login first.")
+  end
 end
