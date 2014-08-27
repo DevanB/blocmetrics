@@ -42,5 +42,8 @@ module UserFlowHelpers
     submit_signup(email, password, passwordConfirmation)
     goto_signin
     submit_signin(email, password)
+
+    expect(page).to have_content("Successfully signed in.")
+    expect(page).to have_content("Welcome #{email}")
   end
 end
