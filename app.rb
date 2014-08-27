@@ -92,7 +92,7 @@ class App < Sinatra::Base
 
   def create_unique_code
     code = SecureRandom.hex(18)
-    unless $db.code_unique?(code)
+    until $db.code_unique?(code)
       code = SecureRandom.hex(18)
     end
     code
