@@ -82,16 +82,19 @@ class App < Sinatra::Base
       erb :"/site/new", :layout => :layout
     end
   end
-end
 
-def current_user
-  $db.find_user_by_email(session[:current_user_email])
-end
+  protected
 
-def create_unique_code
-  code = SecureRandom.hex(18)
-  unless $db.code_unique?(code)
-    code = SecureRandom.hex(18)
+  def current_user
+    $db.find_user_by_email(session[:current_user_email])
   end
-  code
+
+  def create_unique_code
+    code = SecureRandom.hex(18)
+    unless $db.code_unique?(code)
+      code = SecureRandom.hex(18)
+    end
+    code
+  end
+  
 end
