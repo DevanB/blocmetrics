@@ -4,6 +4,7 @@ require 'spec_helper'
 describe "App", :type => :feature do
   include Rack::Test::Methods
   include UserFlowHelpers
+  include SiteHelpers
   Capybara.app = App
 
   before do

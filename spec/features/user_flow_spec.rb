@@ -39,6 +39,27 @@ describe "Users", :type => :feature do
     expect(page).to have_selector("input[value='test@test.com']")
   end
 
+  it "should not sign up if email is blank" do
+    goto_signup
+    submit_signup("", "testpassword", "testpassword")
+
+    expect(page).to have_content("Please specify a valid email address.")
+  end
+
+  it "should not sign up if password is blank" do
+    goto_signup
+    submit_signup("test@test.com", "", "")
+
+    expect(page).to have_content("Please specify a password.")
+  end
+
+  it "should not sign up if email is not valid format" do
+    goto_signup
+    submit_signup("bademail", "testpassword", "testpassword")
+
+    expect(page).to have_content("Please specify a valid email address.")
+  end
+
   it "should sign-in if credentials are correct and display user email and sign out option" do
     signup_and_signin("test@test.com", "testpassword", "testpassword")
   end
