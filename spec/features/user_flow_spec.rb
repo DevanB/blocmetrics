@@ -60,6 +60,17 @@ describe "Users", :type => :feature do
     expect(page).to have_content("Email and/or password not valid. Please try again.")
   end
 
+  it "should not sign-in if wrong email is given" do
+    goto_signup
+    submit_signup("test@test.com", "testpassword", "testpassword")
+
+    goto_signin
+    submit_signin("bademail@test.com", "testpassword")
+    
+    expect(page.status_code).to eq(200)
+    expect(page).to have_content("Email and/or password not valid. Please try again.")
+  end
+
   it "should successfully sign out" do
     goto_signup
     submit_signup("test@test.com", "testpassword", "testpassword")

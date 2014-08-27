@@ -18,7 +18,7 @@ class Database
   end
 
   def check_email_for_signup(email)
-    return true if @db.collection('users').find("email" => email).to_a.count > 0
+    @db.collection('users').find("email" => email).to_a.count > 0
   end
 
   def insert_user(email, password)
@@ -26,7 +26,23 @@ class Database
   end
 
   def check_signin_details(email, password)
-    record = @db.collection('users').find_one("email" => email)
-    record["password"] == password
+    record = find_user_by_email(email)
+    record && record["password"] == password
+  end
+
+  def find_user_by_email(email)
+    @db.collection('users').find_one("email" => email)
+  end
+
+  def create_site(user_id, url, code)
+    @db.collection('sites').insert( { "user_id" => user_id, "url" => url, "code" => code } )
+  end
+
+  def get_sites_for_user(user)
+    @db.collection('sites').find("user_id" => user["_id"]).to_a
+  end
+
+  def code_unique?(code)
+    @db.collection('sites').find("code" => code).to_a.count == 0
   end
 end

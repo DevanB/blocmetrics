@@ -16,6 +16,9 @@ class App < Sinatra::Base
   get '/'  do
     $db.increment_page_count
     @page_count = $db.get_page_count
+    if current_user 
+      @sites = $db.get_sites_for_user(current_user)
+    end
     erb :root, :layout => :layout
   end
 
@@ -65,4 +68,30 @@ class App < Sinatra::Base
       flash.now[:info] = "Not Signed In"
     end
   end
+
+  get '/site/new' do
+    erb :"site/new", :layout => :layout
+  end
+
+  post '/site/new' do
+    if $db.create_site(current_user["_id"], params[:url], create_unique_code)
+      flash[:info] = "Successfully added site."
+      redirect to("/")
+    else
+      flash.now[:fatal] = "Site creation failed. Please try again."
+      erb :"/site/new", :layout => :layout
+    end
+  end
+end
+
+def current_user
+  $db.find_user_by_email(session[:current_user_email])
+end
+
+def create_unique_code
+  code = SecureRandom.hex(18)
+  unless $db.code_unique?(code)
+    code = SecureRandom.hex(18)
+  end
+  code
 end
