@@ -39,15 +39,29 @@ describe "Users", :type => :feature do
     expect(page).to have_selector("input[value='test@test.com']")
   end
 
-  it "should sign-in if credentials are correct and display user email and sign out option" do
+  it "should not sign up if email is blank" do
     goto_signup
-    submit_signup("test@test.com", "testpassword", "testpassword")
+    submit_signup("", "testpassword", "testpassword")
 
-    goto_signin
-    submit_signin("test@test.com", "testpassword")
+    expect(page).to have_content("Email address is not valid.")
+  end
 
-    expect(page).to have_content("Successfully signed in.")
-    expect(page).to have_content("Welcome test@test.com")
+  it "should not sign up if password is blank" do
+    goto_signup
+    submit_signup("test@test.com", "", "")
+
+    expect(page).to have_content("Password is not valid format.")
+  end
+
+  it "should not sign up if email is not valid format" do
+    goto_signup
+    submit_signup("bademail", "testpassword", "testpassword")
+
+    expect(page).to have_content("Email address is not valid.")
+  end
+
+  it "should sign-in if credentials are correct and display user email" do
+    signup_and_signin("test@test.com", "testpassword", "testpassword")
   end
 
   it "should not sign-in if credentials are not correct" do
@@ -60,15 +74,19 @@ describe "Users", :type => :feature do
     expect(page).to have_content("Email and/or password not valid. Please try again.")
   end
 
-  it "should successfully sign out" do
+  it "should not sign-in if wrong email is given" do
     goto_signup
     submit_signup("test@test.com", "testpassword", "testpassword")
 
     goto_signin
-    submit_signin("test@test.com", "testpassword")
+    submit_signin("bademail@test.com", "testpassword")
+    
+    expect(page.status_code).to eq(200)
+    expect(page).to have_content("Email and/or password not valid. Please try again.")
+  end
 
-    expect(page).to have_content("Successfully signed in.")
-    expect(page).to have_content("Welcome test@test.com")
+  it "should successfully sign out" do
+    signup_and_signin("test@test.com", "testpassword", "testpassword")
 
     within('.user-info') do
       click_button "Sign Out"

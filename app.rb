@@ -1,7 +1,10 @@
 require "sinatra/base"
 require "sinatra/reloader"
-require_relative 'database'
 require 'sinatra/flash'
+
+require_relative 'database'
+require_relative 'models/user'
+require_relative 'mappers/user_mapper'
 
 $db = Database.new
 
@@ -11,11 +14,24 @@ class App < Sinatra::Base
 
   configure :development do
     register Sinatra::Reloader
+    also_reload 'database.rb'
+    also_reload 'mappers/user_mapper.rb'
+    also_reload 'models/user.rb'
   end
 
+  before '/site/new' do
+    unless current_user
+      flash[:fatal] = "Not authorized. Please login first."
+      redirect to("/")
+    end
+  end
+  
   get '/'  do
     $db.increment_page_count
     @page_count = $db.get_page_count
+    if current_user
+      @sites = $db.get_sites_for_user(current_user)
+    end
     erb :root, :layout => :layout
   end
 
@@ -24,9 +40,21 @@ class App < Sinatra::Base
   end
 
   post '/users/sign-up' do
-    if $db.check_email_for_signup(params[:email])
+    if $db.email_already_signed_up?(params[:email])
       flash[:fatal] = "Email address already registered."
       redirect to('/users/sign-up')
+      return
+    end
+
+    unless is_valid_email?(params[:email])
+      flash[:fatal] = "Email address is not valid."
+      redirect to("/users/sign-up")
+      return
+    end
+
+    unless is_valid_password?(params[:password])
+      flash[:fatal] = "Password is not valid format."
+      redirect to("/users/sign-up")
       return
     end
 
@@ -46,7 +74,7 @@ class App < Sinatra::Base
   end
 
   post '/users/sign-in' do    
-    if $db.check_signin_details(params[:email], params[:password])
+    if $db.valid_signin_details?(params[:email], params[:password])
       session[:current_user_email] = params[:email]
       flash[:info] = "Successfully signed in."
       redirect to("/")
@@ -64,5 +92,57 @@ class App < Sinatra::Base
     else
       flash.now[:info] = "Not Signed In"
     end
+  end
+
+  get '/site/new' do
+    erb :"site/new", :layout => :layout
+  end
+
+  post '/site/new' do
+    if $db.site_already_taken?(params[:url])
+      flash[:fatal] = "URL is already in use."
+      redirect to("/site/new")
+      return
+    end
+
+    unless is_valid_url?(params[:url]) 
+      flash[:fatal] = "URL is not a valid URL."
+      redirect to("/site/new")
+      return
+    end
+
+    if $db.create_site(current_user.id, params[:url], create_unique_code)
+      flash[:info] = "Successfully added site."
+      redirect to("/")
+    else
+      flash.now[:fatal] = "Site creation failed. Please try again."
+      erb :"/site/new", :layout => :layout
+    end
+  end
+
+  protected
+
+  def current_user
+    UserMapper.new($db).find_by_email(session[:current_user_email])
+  end
+
+  def create_unique_code
+    code = SecureRandom.hex(18)
+    until $db.code_unique?(code) do
+      code = SecureRandom.hex(18)
+    end
+    code
+  end
+
+  def is_valid_url?(url)
+    /^(https?\:\/\/)?([a-zA-Z0-9\-\.]*)\.?([a-zA-Z0-9\-\.]*)\.([a-zA-Z]{2,})$/ =~ url
+  end
+
+  def is_valid_email?(email)
+    /\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b/ =~ email
+  end
+
+  def is_valid_password?(password)
+    /^\S+$/ =~ password
   end
 end
