@@ -11,7 +11,7 @@ class App < Sinatra::Base
 
   configure :development do
     register Sinatra::Reloader
-    also_reload 'database'
+    also_reload 'database.rb'
   end
 
   before '/site/new' do
@@ -82,6 +82,18 @@ class App < Sinatra::Base
   end
 
   post '/site/new' do
+    if $db.site_already_taken?(params[:url])
+      flash[:fatal] = "URL is already in use."
+      redirect to("/site/new")
+      return
+    end
+
+    unless is_valid_url?(params[:url]) 
+      flash[:fatal] = "URL is not a valid URL."
+      redirect to("/site/new")
+      return
+    end
+
     if $db.create_site(current_user["_id"], params[:url], create_unique_code)
       flash[:info] = "Successfully added site."
       redirect to("/")
@@ -105,4 +117,11 @@ class App < Sinatra::Base
     code
   end
 
+  def is_valid_url?(url)
+    /^(https?\:\/\/)?([a-zA-Z0-9\-\.]*)\.?([a-zA-Z0-9\-\.]*)\.([a-zA-Z]{2,})$/ =~ url
+  end
+
+  def is_valid_email?(email)
+    /^([a-zA-Z0-9]+)\@([]+)\.([a-zA-Z]{2,})$/ =~ email
+  end
 end

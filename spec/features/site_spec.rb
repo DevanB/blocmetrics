@@ -35,7 +35,7 @@ describe "App", :type => :feature do
 
     add_site("")
 
-    expect(page).to have_content("Please specify a valid URL.")
+    expect(page).to have_content("URL is not a valid URL.")
   end
 
   it "should not allow a non-url value to be added as a site" do
@@ -43,7 +43,7 @@ describe "App", :type => :feature do
 
     add_site("http://badurl@url")
 
-    expect(page).to have_content("Please specificy a valid URL.")
+    expect(page).to have_content("URL is not a valid URL.")
   end
 
   it "should not allow a URL that is already a site to be added as a site" do

@@ -45,4 +45,8 @@ class Database
   def code_unique?(code)
     @db.collection('sites').find("code" => code).to_a.count == 0
   end
+
+  def site_already_taken?(url)
+    @db.collection('sites').find("url" => url).to_a.count > 0
+  end
 end
