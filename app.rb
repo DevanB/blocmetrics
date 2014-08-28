@@ -41,6 +41,18 @@ class App < Sinatra::Base
       return
     end
 
+    unless is_valid_email?(params[:email])
+      flash[:fatal] = "Email address is not valid."
+      redirect to("/users/sign-up")
+      return
+    end
+
+    unless is_valid_password?(params[:password])
+      flash[:fatal] = "Password is not valid format."
+      redirect to("/users/sign-up")
+      return
+    end
+
     if params[:password] == params[:passwordConfirmation]
       #TODO - ENCRYPT PASSWORD
       $db.insert_user(params[:email], params[:password])
@@ -122,6 +134,10 @@ class App < Sinatra::Base
   end
 
   def is_valid_email?(email)
-    /^([a-zA-Z0-9]+)\@([]+)\.([a-zA-Z]{2,})$/ =~ email
+    /\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b/ =~ email
+  end
+
+  def is_valid_password?(password)
+    /^\S+$/ =~ password
   end
 end
