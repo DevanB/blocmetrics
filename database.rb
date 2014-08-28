@@ -5,6 +5,10 @@ class Database
     @db = Mongo::MongoClient.new("localhost", 27017).db('development')
   end
 
+  def connection
+    @db
+  end
+
   def hash
     @db.collection('pageCounts').find_one()
   end
@@ -26,12 +30,8 @@ class Database
   end
 
   def valid_signin_details?(email, password)
-    record = find_user_by_email(email)
-    record && record["password"] == password
-  end
-
-  def find_user_by_email(email)
-    @db.collection('users').find_one("email" => email)
+    record = UserMapper.new(self).find_by_email(email)
+    record && record.password == password
   end
 
   def create_site(user_id, url, code)
@@ -39,7 +39,7 @@ class Database
   end
 
   def get_sites_for_user(user)
-    @db.collection('sites').find("user_id" => user["_id"]).to_a
+    @db.collection('sites').find("user_id" => user.id).to_a
   end
 
   def code_unique?(code)

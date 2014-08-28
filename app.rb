@@ -1,7 +1,10 @@
 require "sinatra/base"
 require "sinatra/reloader"
-require_relative 'database'
 require 'sinatra/flash'
+
+require_relative 'database'
+require_relative 'models/user'
+require_relative 'mappers/user_mapper'
 
 $db = Database.new
 
@@ -12,6 +15,8 @@ class App < Sinatra::Base
   configure :development do
     register Sinatra::Reloader
     also_reload 'database.rb'
+    also_reload 'mappers/user_mapper.rb'
+    also_reload 'models/user.rb'
   end
 
   before '/site/new' do
@@ -106,7 +111,7 @@ class App < Sinatra::Base
       return
     end
 
-    if $db.create_site(current_user["_id"], params[:url], create_unique_code)
+    if $db.create_site(current_user.id, params[:url], create_unique_code)
       flash[:info] = "Successfully added site."
       redirect to("/")
     else
@@ -118,7 +123,7 @@ class App < Sinatra::Base
   protected
 
   def current_user
-    $db.find_user_by_email(session[:current_user_email])
+    UserMapper.new($db).find_by_email(session[:current_user_email])
   end
 
   def create_unique_code
