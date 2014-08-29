@@ -1,0 +1,17 @@
+!!! 5
+%html
+  %head
+    %title Blocmetrics
+    %link(rel="stylesheet" href="../stylesheets/css/application.css")
+  %body
+    .user-info
+      - if session[:current_user_email]
+        %p
+          Welcome #{session[:current_user_email]} | 
+          %form(action="/users/sign-out" method="post")
+            %input(type="submit" value="Sign Out")
+      - else
+        %a(href="/users/sign-up") Sign Up
+        %a(href="/users/sign-in") Sign In
+    =styled_flash
+    =yield

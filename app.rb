@@ -1,6 +1,7 @@
 require "sinatra/base"
 require "sinatra/reloader"
 require 'sinatra/flash'
+require 'haml'
 
 require_relative 'database'
 require_relative 'models/user'
@@ -32,7 +33,7 @@ class App < Sinatra::Base
     if current_user
       @sites = $db.get_sites_for_user(current_user)
     end
-    erb :root, :layout => :layout
+    haml :root, :layout => :layout
   end
 
   get '/users/sign-up' do
@@ -79,7 +80,7 @@ class App < Sinatra::Base
       flash[:info] = "Successfully signed in."
       redirect to("/")
     else
-      flash.now[:fatal] = "Email and/or password not valid. Please try again."
+      flash.now[:error] = "Email and/or password not valid. Please try again."
       erb :"users/sign-in", :layout => :layout
     end
   end

@@ -1,0 +1,14 @@
+%p Hello World #{@page_count}
+
+- if current_user
+  %a(href="/site/new") Add Site
+
+%p
+  - if @sites
+    %h3 Your Sites:
+    - if @sites.empty?
+      %p
+        You don't have any registered sites.
+    - @sites.each do |site|
+      %p= site["url"]
+      %p= site["code"]

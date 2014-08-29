@@ -1,15 +1,23 @@
-<div class="user-info">
-  <% if session[:current_user_email] %>
-    Welcome <%= session[:current_user_email] %> | 
-    <form action="/users/sign-out" method="post">
-      <input type="submit" value="Sign Out" />
-    </form>
-  <% else %>
-    <a href="/users/sign-up">Sign Up</a>
-    <a href="/users/sign-in">Sign In</a>
-  <% end %>
-</div>
+<!doctype>
+<html>
+  <head>
+    <title>Blocmetrics</title>
+    <link rel="stylesheet" href="../stylesheets/css/application.css">
+  </head>
+  <body>
+    <div class="user-info">
+      <% if session[:current_user_email] %>
+        Welcome <%= session[:current_user_email] %> | 
+        <form action="/users/sign-out" method="post">
+          <input type="submit" value="Sign Out" />
+        </form>
+      <% else %>
+        <a href="/users/sign-up">Sign Up</a>
+        <a href="/users/sign-in">Sign In</a>
+      <% end %>
+    </div>
 
-<%= styled_flash %>
-
-<%= yield %>
+    <%= styled_flash %>
+    <%= yield %>
+  </body>
+</html>
