@@ -1,0 +1,14 @@
+Hello World <%= @page_count %>
+
+<% if current_user %>  
+  <a href="/site/new">Add Site</a>
+<% end %>
+
+<% if @sites %>
+  <h3>Your Sites:</h3>
+  <% if @sites.empty? %><p>You don't have any registered sites.</p><% end %>
+  <% @sites.each do |site| %>
+    <%= site["url"] %>
+    <%= site["code"] %>
+  <% end %>
+<% end %>

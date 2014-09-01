@@ -21,14 +21,6 @@ class Database
     @db.collection('pageCounts').update({}, {"$inc" => {"page_count" => 1}}, {upsert: true})
   end
 
-  def email_already_signed_up?(email)
-    @db.collection('users').find("email" => email).to_a.count > 0
-  end
-
-  def insert_user(email, password)
-    @db.collection('users').insert({"email" => email, "password" => password})
-  end
-
   def valid_signin_details?(email, password)
     record = UserMapper.new(self).find_by_email(email)
     record && record.password == password

@@ -33,7 +33,7 @@ class App < Sinatra::Base
     if current_user
       @sites = $db.get_sites_for_user(current_user)
     end
-    haml :root, :layout => :layout
+    erb :root, :layout => :layout
   end
 
   get '/users/sign-up' do
