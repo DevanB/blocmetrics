@@ -1,0 +1,13 @@
+%h1 Blocmetrics Sign Up:
+%form{:action => "/users/sign-up", :method => "post"}
+  %p
+    %label{:for => "email"} Email:
+    %input{:name => "email", :placeholder => "Email Address", :type => "text", :value => email}
+  %p
+    %label{:for => "password"} Password:
+    %input{:name => "password", :placeholder => "Password", :type => "password"}
+  %p
+    %label{:for => "passwordConfirmation"} Confirm Password:
+    %input{:name => "passwordConfirmation", :placeholder => "Password Again", :type => "password"}
+  %p
+    %input{:type => "submit", :value => "Sign Up"}

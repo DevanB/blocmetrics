@@ -33,11 +33,11 @@ class App < Sinatra::Base
     if current_user
       @sites = $db.get_sites_for_user(current_user)
     end
-    erb :root, :layout => :layout
+    haml :root, :layout => :layout
   end
 
   get '/users/sign-up' do
-    erb :"users/sign-up", :layout => :layout, :locals => { :email => "" }
+    haml :"users/sign-up", :layout => :layout, :locals => { :email => "" }
   end
 
   post '/users/sign-up' do
@@ -66,12 +66,12 @@ class App < Sinatra::Base
       redirect to("/users/sign-in")
     else
       flash.now[:fatal] = "Password and password confirmation do not match."
-      erb :"/users/sign-up", :layout => :layout, :locals => { :email => params[:email] }
+      haml :"/users/sign-up", :layout => :layout, :locals => { :email => params[:email] }
     end
   end
 
   get '/users/sign-in' do
-    erb :"users/sign-in", :layout => :layout
+    haml :"users/sign-in", :layout => :layout
   end
 
   post '/users/sign-in' do    
@@ -81,7 +81,7 @@ class App < Sinatra::Base
       redirect to("/")
     else
       flash.now[:error] = "Email and/or password not valid. Please try again."
-      erb :"users/sign-in", :layout => :layout
+      haml :"users/sign-in", :layout => :layout
     end
   end
 
@@ -96,7 +96,7 @@ class App < Sinatra::Base
   end
 
   get '/site/new' do
-    erb :"site/new", :layout => :layout
+    haml :"site/new", :layout => :layout
   end
 
   post '/site/new' do
@@ -117,7 +117,7 @@ class App < Sinatra::Base
       redirect to("/")
     else
       flash.now[:fatal] = "Site creation failed. Please try again."
-      erb :"/site/new", :layout => :layout
+      haml :"/site/new", :layout => :layout
     end
   end
 
