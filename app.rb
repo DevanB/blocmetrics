@@ -41,7 +41,7 @@ class App < Sinatra::Base
   end
 
   post '/users/sign-up' do
-    if $db.email_already_signed_up?(params[:email])
+    if UserMapper.new($db).email_already_signed_up?(params[:email])
       flash[:fatal] = "Email address already registered."
       redirect to('/users/sign-up')
       return
@@ -61,7 +61,7 @@ class App < Sinatra::Base
 
     if params[:password] == params[:passwordConfirmation]
       #TODO - ENCRYPT PASSWORD
-      $db.insert_user(params[:email], params[:password])
+      UserMapper.new($db).insert(params[:email], params[:password])
       flash[:info] = "Successfully signed up!"
       redirect to("/users/sign-in")
     else

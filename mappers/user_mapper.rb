@@ -8,4 +8,12 @@ class UserMapper
       User.new(hash["email"], hash["password"], hash["_id"])
     end
   end
+
+  def email_already_signed_up?(email)
+    @db.connection.collection('users').find("email" => email).to_a.count > 0
+  end
+
+  def insert(email, password)
+    @db.connection.collection('users').insert({"email" => email, "password" => password})
+  end
 end
