@@ -6,6 +6,11 @@ gem 'mongo'
 gem 'sinatra-contrib'
 gem 'sinatra-flash'
 
+gem 'sass'
+gem 'bourbon'
+gem 'bitters'
+gem 'neat'
+
 group :test do
   gem 'pry'
   gem 'pry-debugger'
