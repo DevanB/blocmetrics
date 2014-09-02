@@ -16,4 +16,9 @@ class UserMapper
   def insert(email, password)
     @db.connection.collection('users').insert({"email" => email, "password" => password})
   end
+
+  def valid_signin_details?(email, password)
+    record = self.find_by_email(email)
+    record && record.password == password
+  end
 end

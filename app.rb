@@ -1,5 +1,5 @@
-require "sinatra/base"
-require "sinatra/reloader"
+require 'sinatra/base'
+require 'sinatra/reloader'
 require 'sinatra/flash'
 require 'haml'
 
@@ -43,7 +43,7 @@ class App < Sinatra::Base
   post '/users/sign-up' do
     if UserMapper.new($db).email_already_signed_up?(params[:email])
       flash[:fatal] = "Email address already registered."
-      redirect to('/users/sign-up')
+      redirect to("/users/sign-up")
       return
     end
 
@@ -75,7 +75,7 @@ class App < Sinatra::Base
   end
 
   post '/users/sign-in' do    
-    if $db.valid_signin_details?(params[:email], params[:password])
+    if UserMapper.new($db).valid_signin_details?(params[:email], params[:password])
       session[:current_user_email] = params[:email]
       flash[:info] = "Successfully signed in."
       redirect to("/")
@@ -100,7 +100,7 @@ class App < Sinatra::Base
   end
 
   post '/site/new' do
-    if $db.site_already_taken?(params[:url])
+    if SiteMapper.new($db).already_taken?(params[:url])
       flash[:fatal] = "URL is already in use."
       redirect to("/site/new")
       return
@@ -112,7 +112,7 @@ class App < Sinatra::Base
       return
     end
 
-    if $db.create_site(current_user.id, params[:url], create_unique_code)
+    if SiteMapper.new($db).create(current_user.id, params[:url])
       flash[:info] = "Successfully added site."
       redirect to("/")
     else
@@ -125,25 +125,5 @@ class App < Sinatra::Base
 
   def current_user
     UserMapper.new($db).find_by_email(session[:current_user_email])
-  end
-
-  def create_unique_code
-    code = SecureRandom.hex(18)
-    until $db.code_unique?(code) do
-      code = SecureRandom.hex(18)
-    end
-    code
-  end
-
-  def is_valid_url?(url)
-    /^(https?\:\/\/)?([a-zA-Z0-9\-\.]*)\.?([a-zA-Z0-9\-\.]*)\.([a-zA-Z]{2,})$/ =~ url
-  end
-
-  def is_valid_email?(email)
-    /\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b/ =~ email
-  end
-
-  def is_valid_password?(password)
-    /^\S+$/ =~ password
   end
 end

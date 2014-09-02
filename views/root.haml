@@ -6,5 +6,5 @@ Hello World #{@page_count}
   - if @sites.empty?
     %p You don't have any registered sites.
   - @sites.each do |site|
-    = site["url"]
-    = site["code"]
+    %p= site["url"]
+    %p= site["code"]
