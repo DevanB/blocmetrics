@@ -1,18 +1,13 @@
+require 'securerandom'
+
 class Site
+  attr_accessor :user, :url, :code, :id
 
-  def initialize(user_id, url, code, id = nil)
-    @user_id, @url, @code, @id = user_id, url, code, id
+  def initialize(user, url, id = nil)
+    @user, @url, @code, @id = user, url, nil, id
   end
 
-  def is_valid_url?(url)
-    /^(https?\:\/\/)?([a-zA-Z0-9\-\.]*)\.?([a-zA-Z0-9\-\.]*)\.([a-zA-Z]{2,})$/ =~ url
-  end
-
-  def create_unique_code
-    code = SecureRandom.hex(18)
-    until $db.code_unique?(code) do
-      code = SecureRandom.hex(18)
-    end
-    code
+  def generate_code
+    SecureRandom.hex(18)
   end
 end

@@ -5,7 +5,9 @@ require 'haml'
 
 require_relative 'database'
 require_relative 'models/user'
+require_relative 'models/site'
 require_relative 'mappers/user_mapper'
+require_relative 'mappers/site_mapper'
 
 $db = Database.new
 
@@ -17,7 +19,9 @@ class App < Sinatra::Base
     register Sinatra::Reloader
     also_reload 'database.rb'
     also_reload 'mappers/user_mapper.rb'
+    also_reload 'mappers/site_mapper.rb'
     also_reload 'models/user.rb'
+    also_reload 'models/site.rb'
   end
 
   before '/site/new' do
@@ -31,7 +35,7 @@ class App < Sinatra::Base
     $db.increment_page_count
     @page_count = $db.get_page_count
     if current_user
-      @sites = $db.get_sites_for_user(current_user)
+      @sites = SiteMapper.new($db).get_sites_for_user(current_user)
     end
     haml :root, :layout => :layout
   end
@@ -60,8 +64,8 @@ class App < Sinatra::Base
     end
 
     if params[:password] == params[:passwordConfirmation]
-      #TODO - ENCRYPT PASSWORD
-      UserMapper.new($db).insert(params[:email], params[:password])
+      user = User.new(params[:email], params[:password])
+      UserMapper.new($db).persist(user)
       flash[:info] = "Successfully signed up!"
       redirect to("/users/sign-in")
     else
@@ -112,7 +116,8 @@ class App < Sinatra::Base
       return
     end
 
-    if SiteMapper.new($db).create(current_user.id, params[:url])
+    site = Site.new(current_user, params[:url])
+    if SiteMapper.new($db).persist(site)
       flash[:info] = "Successfully added site."
       redirect to("/")
     else
@@ -125,5 +130,17 @@ class App < Sinatra::Base
 
   def current_user
     UserMapper.new($db).find_by_email(session[:current_user_email])
+  end
+
+  def is_valid_email?(email)
+    /\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b/ =~ email
+  end
+
+  def is_valid_password?(password)
+    /^\S+$/ =~ password
+  end
+
+  def is_valid_url?(url)
+    /^(https?\:\/\/)?([a-zA-Z0-9\-\.]*)\.?([a-zA-Z0-9\-\.]*)\.([a-zA-Z]{2,})$/ =~ url
   end
 end

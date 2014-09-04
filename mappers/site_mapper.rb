@@ -3,8 +3,11 @@ class SiteMapper
     @db = db
   end
 
-  def create(user_id, url, code)
-    @db.connection.collection('sites').insert( { "user_id" => user_id, "url" => url, "code" => code } )
+  def persist(site)
+    code = create_unique_code(site)
+    id = @db.connection.collection('sites').insert( { "user_id" => site.user.id, "url" => site.url, "code" => code } )
+    site.code = code
+    site.id = id
   end
 
   def get_sites_for_user(user)
@@ -17,5 +20,13 @@ class SiteMapper
 
   def already_taken?(url)
     @db.connection.collection('sites').find("url" => url).to_a.count > 0
+  end
+
+  def create_unique_code(site)
+    code = site.generate_code
+    until code_unique?(code) do
+      code = site.generate_code
+    end
+    code
   end
 end

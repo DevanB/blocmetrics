@@ -13,8 +13,9 @@ class UserMapper
     @db.connection.collection('users').find("email" => email).to_a.count > 0
   end
 
-  def insert(email, password)
-    @db.connection.collection('users').insert({"email" => email, "password" => password})
+  def persist(user)
+    id = @db.connection.collection('users').insert({"email" => user.email, "password" => user.password})
+    user.id = id
   end
 
   def valid_signin_details?(email, password)
