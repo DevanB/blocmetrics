@@ -18,8 +18,8 @@ class SiteMapper
     @db.connection.collection('sites').find("code" => code).to_a.count == 0
   end
 
-  def already_taken?(url)
-    @db.connection.collection('sites').find("url" => url).to_a.count > 0
+  def already_taken?(site)
+    @db.connection.collection('sites').find("url" => site.url).to_a.count > 0
   end
 
   def create_unique_code(site)

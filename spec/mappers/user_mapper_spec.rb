@@ -8,7 +8,11 @@ describe UserMapper do
     
     let(:db) {Database.new}
     let(:mapper) {UserMapper.new(db)}
-    let(:user) {User.new("test@test.com", "testpassword")}
+    let(:user) {User.new("test@test.com", "testpassword", "testpassword")}
+
+    before do
+      MongoCleaner.clean
+    end
 
     it "should set id of site that it persisted" do
       mapper.persist(user)

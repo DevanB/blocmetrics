@@ -6,6 +6,7 @@ require 'haml'
 require_relative 'database'
 require_relative 'models/user'
 require_relative 'models/site'
+require_relative 'models/validation_error'
 require_relative 'mappers/user_mapper'
 require_relative 'mappers/site_mapper'
 
@@ -22,6 +23,7 @@ class App < Sinatra::Base
     also_reload 'mappers/site_mapper.rb'
     also_reload 'models/user.rb'
     also_reload 'models/site.rb'
+    also_reload 'models/validation_error.rb'
   end
 
   before '/site/new' do
@@ -45,33 +47,28 @@ class App < Sinatra::Base
   end
 
   post '/users/sign-up' do
-    if UserMapper.new($db).email_already_signed_up?(params[:email])
-      flash[:fatal] = "Email address already registered."
-      redirect to("/users/sign-up")
-      return
-    end
+    user = User.new(params[:email], params[:password], params[:passwordConfirmation])
 
-    unless is_valid_email?(params[:email])
-      flash[:fatal] = "Email address is not valid."
-      redirect to("/users/sign-up")
-      return
+    begin
+      user.validate
+    rescue ValidationError => e
+      flash.now[:fatal] = e.message
+      return haml :"/users/sign-up", :layout => :layout, :locals => { :email => params[:email] }
     end
-
-    unless is_valid_password?(params[:password])
-      flash[:fatal] = "Password is not valid format."
-      redirect to("/users/sign-up")
-      return
-    end
-
-    if params[:password] == params[:passwordConfirmation]
-      user = User.new(params[:email], params[:password])
+    
+    begin
       UserMapper.new($db).persist(user)
-      flash[:info] = "Successfully signed up!"
-      redirect to("/users/sign-in")
-    else
-      flash.now[:fatal] = "Password and password confirmation do not match."
-      haml :"/users/sign-up", :layout => :layout, :locals => { :email => params[:email] }
+    rescue Mongo::OperationFailure => e
+      if e.message =~ /11000/
+        flash.now[:fatal] = "Email address already registered."
+        return haml :"/users/sign-up", :layout => :layout, :locals => { :email => ""}
+      else
+        flash.now[:fatal] = e.message
+      end
     end
+
+    flash[:info] = "Successfully signed up!"
+    redirect to("/users/sign-in")
   end
 
   get '/users/sign-in' do
@@ -104,19 +101,16 @@ class App < Sinatra::Base
   end
 
   post '/site/new' do
-    if SiteMapper.new($db).already_taken?(params[:url])
-      flash[:fatal] = "URL is already in use."
-      redirect to("/site/new")
-      return
-    end
-
-    unless is_valid_url?(params[:url]) 
-      flash[:fatal] = "URL is not a valid URL."
-      redirect to("/site/new")
-      return
-    end
-
     site = Site.new(current_user, params[:url])
+
+    begin
+      site.validate 
+    rescue ValidationError => e
+      flash[:fatal] = e.message
+      redirect to("/site/new")
+      return
+    end
+
     if SiteMapper.new($db).persist(site)
       flash[:info] = "Successfully added site."
       redirect to("/")
@@ -130,17 +124,5 @@ class App < Sinatra::Base
 
   def current_user
     UserMapper.new($db).find_by_email(session[:current_user_email])
-  end
-
-  def is_valid_email?(email)
-    /\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b/ =~ email
-  end
-
-  def is_valid_password?(password)
-    /^\S+$/ =~ password
-  end
-
-  def is_valid_url?(url)
-    /^(https?\:\/\/)?([a-zA-Z0-9\-\.]*)\.?([a-zA-Z0-9\-\.]*)\.([a-zA-Z]{2,})$/ =~ url
   end
 end

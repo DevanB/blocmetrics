@@ -9,7 +9,7 @@ describe SiteMapper do
     
     let(:db) {Database.new}
     let(:mapper) {SiteMapper.new(db)}
-    let(:user) {User.new("test@test.com", "testpassword")}
+    let(:user) {User.new("test@test.com", "testpassword", "testpassword")}
     let(:url) {"http://test@test.com"}
     let(:site) {Site.new(user, url)}
 
