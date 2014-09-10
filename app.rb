@@ -47,35 +47,22 @@ class App < Sinatra::Base
   end
 
   post '/users/sign-up' do
-    user = User.new(params[:email], params[:password], params[:passwordConfirmation])
-
     begin
-      user.validate
+      user = User.new(params[:email], params[:password], params[:passwordConfirmation])
+      UserMapper.new($db).persist(user)
+      flash[:info] = "Successfully signed up!"
+      redirect to("/users/sign-in")
     rescue ValidationError => e
       flash.now[:fatal] = e.message
       return haml :"/users/sign-up", :layout => :layout, :locals => { :email => params[:email] }
     end
-    
-    begin
-      UserMapper.new($db).persist(user)
-    rescue Mongo::OperationFailure => e
-      if e.message =~ /11000/
-        flash.now[:fatal] = "Email address already registered."
-        return haml :"/users/sign-up", :layout => :layout, :locals => { :email => ""}
-      else
-        flash.now[:fatal] = e.message
-      end
-    end
-
-    flash[:info] = "Successfully signed up!"
-    redirect to("/users/sign-in")
   end
 
   get '/users/sign-in' do
     haml :"users/sign-in", :layout => :layout
   end
 
-  post '/users/sign-in' do    
+  post '/users/sign-in' do  
     if UserMapper.new($db).valid_signin_details?(params[:email], params[:password])
       session[:current_user_email] = params[:email]
       flash[:info] = "Successfully signed in."
