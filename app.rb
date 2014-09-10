@@ -1,11 +1,14 @@
-require "sinatra/base"
-require "sinatra/reloader"
+require 'sinatra/base'
+require 'sinatra/reloader'
 require 'sinatra/flash'
 require 'haml'
 
 require_relative 'database'
 require_relative 'models/user'
+require_relative 'models/site'
+require_relative 'models/validation_error'
 require_relative 'mappers/user_mapper'
+require_relative 'mappers/site_mapper'
 
 $db = Database.new
 
@@ -17,7 +20,10 @@ class App < Sinatra::Base
     register Sinatra::Reloader
     also_reload 'database.rb'
     also_reload 'mappers/user_mapper.rb'
+    also_reload 'mappers/site_mapper.rb'
     also_reload 'models/user.rb'
+    also_reload 'models/site.rb'
+    also_reload 'models/validation_error.rb'
   end
 
   before '/site/new' do
@@ -31,7 +37,7 @@ class App < Sinatra::Base
     $db.increment_page_count
     @page_count = $db.get_page_count
     if current_user
-      @sites = $db.get_sites_for_user(current_user)
+      @sites = SiteMapper.new($db).get_sites_for_user(current_user)
     end
     haml :root, :layout => :layout
   end
@@ -41,32 +47,14 @@ class App < Sinatra::Base
   end
 
   post '/users/sign-up' do
-    if UserMapper.new($db).email_already_signed_up?(params[:email])
-      flash[:fatal] = "Email address already registered."
-      redirect to('/users/sign-up')
-      return
-    end
-
-    unless is_valid_email?(params[:email])
-      flash[:fatal] = "Email address is not valid."
-      redirect to("/users/sign-up")
-      return
-    end
-
-    unless is_valid_password?(params[:password])
-      flash[:fatal] = "Password is not valid format."
-      redirect to("/users/sign-up")
-      return
-    end
-
-    if params[:password] == params[:passwordConfirmation]
-      #TODO - ENCRYPT PASSWORD
-      UserMapper.new($db).insert(params[:email], params[:password])
+    begin
+      user = User.new(params[:email], params[:password], params[:passwordConfirmation])
+      UserMapper.new($db).persist(user)
       flash[:info] = "Successfully signed up!"
       redirect to("/users/sign-in")
-    else
-      flash.now[:fatal] = "Password and password confirmation do not match."
-      haml :"/users/sign-up", :layout => :layout, :locals => { :email => params[:email] }
+    rescue ValidationError => e
+      flash.now[:fatal] = e.message
+      return haml :"/users/sign-up", :layout => :layout, :locals => { :email => params[:email] }
     end
   end
 
@@ -74,8 +62,8 @@ class App < Sinatra::Base
     haml :"users/sign-in", :layout => :layout
   end
 
-  post '/users/sign-in' do    
-    if $db.valid_signin_details?(params[:email], params[:password])
+  post '/users/sign-in' do  
+    if UserMapper.new($db).valid_signin_details?(params[:email], params[:password])
       session[:current_user_email] = params[:email]
       flash[:info] = "Successfully signed in."
       redirect to("/")
@@ -100,19 +88,17 @@ class App < Sinatra::Base
   end
 
   post '/site/new' do
-    if $db.site_already_taken?(params[:url])
-      flash[:fatal] = "URL is already in use."
+    site = Site.new(current_user, params[:url])
+
+    begin
+      site.validate 
+    rescue ValidationError => e
+      flash[:fatal] = e.message
       redirect to("/site/new")
       return
     end
 
-    unless is_valid_url?(params[:url]) 
-      flash[:fatal] = "URL is not a valid URL."
-      redirect to("/site/new")
-      return
-    end
-
-    if $db.create_site(current_user.id, params[:url], create_unique_code)
+    if SiteMapper.new($db).persist(site)
       flash[:info] = "Successfully added site."
       redirect to("/")
     else
@@ -125,25 +111,5 @@ class App < Sinatra::Base
 
   def current_user
     UserMapper.new($db).find_by_email(session[:current_user_email])
-  end
-
-  def create_unique_code
-    code = SecureRandom.hex(18)
-    until $db.code_unique?(code) do
-      code = SecureRandom.hex(18)
-    end
-    code
-  end
-
-  def is_valid_url?(url)
-    /^(https?\:\/\/)?([a-zA-Z0-9\-\.]*)\.?([a-zA-Z0-9\-\.]*)\.([a-zA-Z]{2,})$/ =~ url
-  end
-
-  def is_valid_email?(email)
-    /\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b/ =~ email
-  end
-
-  def is_valid_password?(password)
-    /^\S+$/ =~ password
   end
 end

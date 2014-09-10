@@ -45,17 +45,4 @@ describe "App", :type => :feature do
 
     expect(page).to have_content("URL is not a valid URL.")
   end
-
-  it "should not allow a URL that is already a site to be added as a site" do
-    signup_and_signin("test@test.com", "testpassword", "testpassword")
-
-    add_site("http://www.testurl.com")
-
-    expect(page).to have_content("Successfully added site.")
-    expect(page).to have_content("http://www.testurl.com")
-
-    add_site("http://www.testurl.com")
-
-    expect(page).to have_content("URL is already in use.")
-  end
 end
