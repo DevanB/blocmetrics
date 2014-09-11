@@ -107,9 +107,17 @@ class App < Sinatra::Base
     end
   end
 
+  post '/events' do
+    if !SiteMapper.new($db).find_by_code(params[:code])
+      status 404
+    end
+  end
+
   protected
 
   def current_user
     UserMapper.new($db).find_by_email(session[:current_user_email])
   end
 end
+
+#TODO: display events per site after user logs in

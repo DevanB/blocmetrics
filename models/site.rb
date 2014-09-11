@@ -3,8 +3,8 @@ require 'securerandom'
 class Site
   attr_accessor :user, :url, :code, :id
 
-  def initialize(user, url, id = nil)
-    @user, @url, @code, @id = user, url, nil, id
+  def initialize(user, url, code = nil, id = nil)
+    @user, @url, @code, @id = user, url, code, id
   end
 
   def generate_code

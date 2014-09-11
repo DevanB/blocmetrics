@@ -10,6 +10,12 @@ class UserMapper
     end
   end
 
+  def find_by_id(id)
+    if hash = @db.connection.collection('users').find_one("_id" => id)
+      User.new(hash["email"], hash["password"], hash["_id"])
+    end
+  end
+
   def persist(user)
     user.validate
     id = @db.connection.collection('users').insert({"email" => user.email, "password" => user.password})
