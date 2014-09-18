@@ -1,5 +1,6 @@
-require_relative '../../app'
 require 'spec_helper'
+require_relative '../../app'
+
 
 describe "Events", :type => :feature do
   include Rack::Test::Methods
@@ -29,22 +30,27 @@ describe "Events", :type => :feature do
   end
 
   it "should be viewable" do
-    UserMapper.new($db).persist(user)
-    SiteMapper.new($db).persist(site)
+    Timecop.freeze(Time.now) do
+      UserMapper.new($db).persist(user)
+      SiteMapper.new($db).persist(site)
 
-    post '/events', code: site.code, name: 'event name', property1: '2', property2: '6'
-    expect(last_response.status).to eq(200)
+      post '/events', code: site.code, name: 'event name', property1: '2', property2: '6'
+      expect(last_response.status).to eq(200)
 
-    visit "/"
-    goto_signin
-    submit_signin("test@test.com", "testpassword")
-    expect(page).to have_content("Successfully signed in.")
+      visit "/"
+      goto_signin
+      submit_signin("test@test.com", "testpassword")
+      expect(page).to have_content("Successfully signed in.")
 
-    within("#sites") do
-      click_link "#{site.url}"
+      within("#sites") do
+        click_link "#{site.url}"
+      end
+
+      expect(page).to have_content("event name")
+      expect(page).to have_content("2")
+      expect(page).to have_content("6")
+      expect(page).to have_content(Time.now)
     end
-
-    expect(page).to have_content("event name")
   end
 end
 

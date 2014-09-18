@@ -2,7 +2,7 @@ require 'mongo'
 
 class Database
   def initialize
-    @db = Mongo::MongoClient.new("localhost", 27017).db('development')
+    @db = Mongo::MongoClient.new("localhost", 27017).db(ENV["DATABASE_NAME"] || 'development')
   end
 
   def connection

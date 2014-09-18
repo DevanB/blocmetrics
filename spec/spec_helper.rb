@@ -3,15 +3,18 @@
 # The generated `.rspec` file contains `--require spec_helper` which will cause this
 # file to always be loaded, without a need to explicitly require it in any files.
 #
+ENV["DATABASE_NAME"] = "test" 
 require 'capybara/rspec'
 require_relative '../database'
 require 'pry'
 require 'pry-debugger'
 require 'rack/test'
+require 'timecop'
+
 
 module MongoCleaner
   def self.clean
-    db = Mongo::MongoClient.new("localhost", 27017).db('development')
+    db = Mongo::MongoClient.new("localhost", 27017).db(ENV["DATABASE_NAME"] || 'development')
 
     collections = db.collections.select { |c| c.name !~ /^system\./ }
     collections.each {|c| c.remove}

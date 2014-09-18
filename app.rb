@@ -7,8 +7,10 @@ require_relative 'database'
 require_relative 'models/user'
 require_relative 'models/site'
 require_relative 'models/validation_error'
+require_relative 'models/event'
 require_relative 'mappers/user_mapper'
 require_relative 'mappers/site_mapper'
+require_relative 'mappers/event_mapper'
 
 $db = Database.new
 
@@ -110,8 +112,19 @@ class App < Sinatra::Base
   post '/events' do
     if !SiteMapper.new($db).find_by_code(params[:code])
       status 404
+    else
+      event = Event.new(params[:code], params[:name], params[:property1], params[:property2])
+      EventMapper.new($db).persist(event)
     end
+    ""
   end
+
+  get '/events/:code' do
+    site = SiteMapper.new($db).find_by_code(params[:code])
+    @events = EventMapper.new($db).find_events_for_code(site.code)
+    haml :"/events/show", :layout => :layout
+  end
+
 
   protected
 

@@ -1,5 +1,6 @@
-require_relative '../../app'
 require 'spec_helper'
+require_relative '../../app'
+
 
 describe "App", :type => :feature do
   include Rack::Test::Methods
