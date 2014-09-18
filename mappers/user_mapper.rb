@@ -6,13 +6,13 @@ class UserMapper
 
   def find_by_email(email)
     if hash = @db.connection.collection('users').find_one("email" => email)
-      User.new(hash["email"], hash["password"], hash["_id"])
+      User.new(hash["email"], hash["password"], hash["password"], hash["_id"])
     end
   end
 
   def find_by_id(id)
     if hash = @db.connection.collection('users').find_one("_id" => id)
-      User.new(hash["email"], hash["password"], hash["_id"])
+      User.new(hash["email"], hash["password"], hash["password"], hash["_id"])
     end
   end
 

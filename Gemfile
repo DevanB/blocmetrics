@@ -5,7 +5,7 @@ gem 'sinatra'
 gem 'mongo'
 gem 'sinatra-contrib'
 gem 'sinatra-flash'
-
+gem 'haml'
 gem 'sass'
 gem 'bourbon'
 gem 'bitters'
