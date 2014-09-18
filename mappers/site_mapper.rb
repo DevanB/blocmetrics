@@ -1,3 +1,4 @@
+require_relative 'user_mapper'
 class SiteMapper
   def initialize(db)
     @db = db
@@ -14,17 +15,20 @@ class SiteMapper
     @db.connection.collection('sites').find("user_id" => user.id).to_a
   end
 
-  def code_unique?(code)
-    @db.connection.collection('sites').find("code" => code).to_a.count == 0
-  end
-
   def already_taken?(site)
     @db.connection.collection('sites').find("url" => site.url).to_a.count > 0
   end
 
+  def find_by_code(code)
+    if hash = @db.connection.collection('sites').find_one("code" => code)
+      user = UserMapper.new(@db).find_by_id(hash["user_id"])
+      Site.new(user, hash["url"], hash["code"], hash["_id"])
+    end
+  end
+
   def create_unique_code(site)
     code = site.generate_code
-    until code_unique?(code) do
+    while find_by_code(code) do
       code = site.generate_code
     end
     code

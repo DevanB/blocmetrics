@@ -5,7 +5,7 @@ gem 'sinatra'
 gem 'mongo'
 gem 'sinatra-contrib'
 gem 'sinatra-flash'
-
+gem 'haml'
 gem 'sass'
 gem 'bourbon'
 gem 'bitters'
@@ -16,4 +16,5 @@ group :test do
   gem 'pry-debugger'
   gem 'capybara'
   gem 'rspec'
+  gem 'timecop'
 end

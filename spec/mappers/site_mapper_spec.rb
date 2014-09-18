@@ -1,7 +1,8 @@
+require 'spec_helper'
 require_relative '../../models/site'
 require_relative '../../models/user'
 require_relative '../../mappers/site_mapper'
-require 'spec_helper'
+
 
 describe SiteMapper do
 
@@ -10,7 +11,7 @@ describe SiteMapper do
     let(:db) {Database.new}
     let(:mapper) {SiteMapper.new(db)}
     let(:user) {User.new("test@test.com", "testpassword", "testpassword")}
-    let(:url) {"http://test@test.com"}
+    let(:url) {"http://test.com"}
     let(:site) {Site.new(user, url)}
 
     it "should set code of site that it persisted" do
