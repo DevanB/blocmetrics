@@ -2,7 +2,14 @@ require 'mongo'
 
 class Database
   def initialize
-    @db = Mongo::MongoClient.new("localhost", 27017).db(ENV["DATABASE_NAME"] || 'development')
+    if ENV['MONGOHQ_URL']
+      uri = URI.parse(ENV['MONGOHQ_URL'])
+      db_name = uri.path.gsub(/^\//, '')
+      @db = Mongo::Connection.new(uri.host, uri.port).db(db_name)
+      @db.authenticate(uri.user, uri.password) unless (uri.user.nil? || uri.password.nil?)
+    else
+      @db = Mongo::MongoClient.new("localhost", 27017).db(ENV["DATABASE_NAME"] || 'development')
+    end
   end
 
   def connection
