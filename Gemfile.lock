@@ -10,6 +10,8 @@ GEM
       sass (~> 3.3)
       thor
     bson (1.10.2)
+    bson_ext (1.10.2)
+      bson (~> 1.10.2)
     capybara (2.4.1)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -89,6 +91,7 @@ PLATFORMS
 DEPENDENCIES
   bitters
   bourbon
+  bson_ext
   capybara
   haml
   mongo
