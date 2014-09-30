@@ -8,4 +8,3 @@ Hello World #{@page_count}
   #sites
     - @sites.each do |site|
       %a{:href => "/events/#{site["code"]}"}= site["url"]
-      %p= site["code"]

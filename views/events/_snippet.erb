@@ -1,0 +1,12 @@
+function _bm(name, property1, property2) {
+  var _bm_code = "<%= @site.code %>";
+  var _bm_url = "http://guarded-peak-4233.herokuapp.com/events";
+  var _bm_params = "code=" + _bm_code +
+    "&name=" + encodeURIComponent(name) +
+    "&property1=" + encodeURIComponent(property1) +
+    "&property2=" + encodeURIComponent(property2);
+  var _bm_request = new XMLHttpRequest();
+  _bm_request.open("POST", _bm_url, true);
+  _bm_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  _bm_request.send(_bm_params);
+};

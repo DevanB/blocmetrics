@@ -1,6 +1,18 @@
 Events
+
+%p Copy and paste the snippet below into script tags right before the closing body tag.
+%pre= erb :"/events/_snippet"
+
+%p Customize the options in this snippet below and track your users.
+%pre _bm('event name', 'option', 'option')
+
 - @events.each do |event|
   %p= event.name
   %p= event.property1
   %p= event.property2
   %p= event.created_at
+
+%form{:action => "/events/#{@site.code}/search", :method => :get}
+  %input{:type => "text", :name => "date1"}
+  %input{:type => "text", :name => "date2"}
+  %input{:type => "submit", :value => "Search"}

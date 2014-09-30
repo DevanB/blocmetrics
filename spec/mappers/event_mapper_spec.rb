@@ -15,6 +15,9 @@ describe EventMapper do
   let(:url) {"http://test.com"}
   let(:site) {Site.new(user, url)}
   let(:event) {Event.new(site.code, "event name", "1", "2")}
+  let(:event2) {Event.new(site.code, "event name 2", "1", "2")}
+  let(:event3) {Event.new(site.code, "event name 3", "1", "2")}
+  let(:event4) {Event.new(site.code, "event name 4", "1", "2")}
 
   it "should persist to database with multiple values" do
     SiteMapper.new($db).persist(site)
@@ -24,12 +27,23 @@ describe EventMapper do
     expect(found).to include(event)
   end
 
-  xit "should persist to database without both properties" do
-  end
+  it "should find events between two dates" do
+    SiteMapper.new($db).persist(site)
 
-  xit "should not persist to database if no unique code is present" do
-  end
+    Timecop.freeze(Time.new(2014,9,27,9,7)) do
+      mapper.persist(event)
+    end
+    Timecop.freeze(Time.new(2014,9,28,9,7)) do
+      mapper.persist(event2)
+    end
+    Timecop.freeze(Time.new(2014,9,30,9,7)) do
+      mapper.persist(event3)
+    end
+    Timecop.freeze(Time.new(2014,9,31,9,7)) do
+      mapper.persist(event4)
+    end
 
-  xit "should not persist to database if no event name is present" do
+    found_events = mapper.find_events_within_dates(Time.new(2014,9,28,9,7), Time.new(2014,9,30,9,7))
+    expect(found_events).to eq([event2, event3])
   end
 end

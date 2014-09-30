@@ -15,6 +15,7 @@ require_relative 'mappers/event_mapper'
 $db = Database.new
 
 class App < Sinatra::Base
+  SECONDS_IN_DAY = 86400
   enable :sessions
   register Sinatra::Flash
 
@@ -23,6 +24,7 @@ class App < Sinatra::Base
     also_reload 'database.rb'
     also_reload 'mappers/user_mapper.rb'
     also_reload 'mappers/site_mapper.rb'
+    also_reload 'mappers/event_mapper.rb'
     also_reload 'models/user.rb'
     also_reload 'models/site.rb'
     also_reload 'models/validation_error.rb'
@@ -120,17 +122,26 @@ class App < Sinatra::Base
   end
 
   get '/events/:code' do
-    site = SiteMapper.new($db).find_by_code(params[:code])
-    @events = EventMapper.new($db).find_events_for_code(site.code)
+    @site = SiteMapper.new($db).find_by_code(params[:code])
+    @events = EventMapper.new($db).find_events_for_code(@site.code)
     haml :"/events/show", :layout => :layout
   end
 
+  get '/events/:code/search' do
+    @site = SiteMapper.new($db).find_by_code(params[:code])
+    date1 = parse_date(params[:date1])
+    date2 = parse_date(params[:date2]) + SECONDS_IN_DAY
+    @events = EventMapper.new($db).find_events_within_dates(date1, date2)
+    haml :"/events/show", :layout => :layout
+  end
 
   protected
 
   def current_user
     UserMapper.new($db).find_by_email(session[:current_user_email])
   end
-end
 
-#TODO: display events per site after user logs in
+  def parse_date(date)
+    Date.parse(date).to_time
+  end
+end
