@@ -41,6 +41,6 @@
           %td= event.created_at.localtime
 %script
   var picker = new Pikaday({field: document.getElementById('datepicker'),onSelect: function(date){document.getElementById('datepicker').value=moment(date).format("YYYY-MM-DD");}});
-  picker.setDate("#{@date1}");
+  document.getElementById('datepicker').value=moment("#{@date1.to_date}").format("YYYY-MM-DD");
   var picker2 = new Pikaday({field: document.getElementById('datepicker2'),onSelect: function(date){document.getElementById('datepicker2').value=moment(date).format("YYYY-MM-DD");}});
-  picker2.setDate("#{@date2}");
+  document.getElementById('datepicker2').value=moment("#{@date2.to_date}").format("YYYY-MM-DD");

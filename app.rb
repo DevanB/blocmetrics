@@ -125,14 +125,16 @@ class App < Sinatra::Base
   get '/events/:code' do
     @site = SiteMapper.new($db).find_by_code(params[:code])
     @events = EventMapper.new($db).find_events_for_code(@site.code)
+    @date1 = Date.today-7
+    @date2 = Date.today
     haml :"/events/show", :layout => :layout
   end
 
   get '/events/:code/search' do
     @site = SiteMapper.new($db).find_by_code(params[:code])
     @date1 = parse_date(params[:date1])
-    @date2 = parse_date(params[:date2]) + SECONDS_IN_DAY
-    @events = EventMapper.new($db).find_events_within_dates(@date1, @date2)
+    @date2 = parse_date(params[:date2])
+    @events = EventMapper.new($db).find_events_within_dates(@date1, @date2 + SECONDS_IN_DAY)
     haml :"/events/show", :layout => :layout
   end
 
