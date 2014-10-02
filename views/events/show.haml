@@ -1,34 +1,44 @@
-Events
-
-%p Copy and paste the snippet below into script tags right before the closing body tag.
-%pre= erb :"/events/_snippet"
-
-%p Customize the options in this snippet below and track your users.
-%pre _bm('event name', 'option', 'option')
-
-%h4 Events for #{@site.url}
-
-%table
-  %thead
-    %th Event Name
-    %th Event Property
-    %th Event Property
-    %th Event Created At
-  %tbody
-    -@events.each do |event|
-      %tr
-        %td= event.name
-        %td= event.property1
-        %td= event.property2
-        %td= event.created_at.localtime
-
-%h4 Search event date range
-%form{:action => "/events/#{@site.code}/search", :method => :get}
-  %input{:type => "text", :name => "date1", :id => "datepicker", :autocomplete => "off"}
-  %input{:type => "text", :name => "date2", :id => "datepicker2", :autocomplete => "off"}
-  %input{:type => "submit", :value => "Search"}
-
-
+%br
+%h5 #{@site.url} events
+%br
+%div.row
+  %dl.accordion{"data-accordion" => ""}
+    %dd.accordion-navigation
+      %a{:href => "#panel1"} Setup Instructions
+      #panel1.content      
+        %p Copy and paste the snippet below into script tags right before the closing body tag.
+        %pre= erb :"/events/_snippet"
+    %dd.accordion-navigation
+      %a{:href => "#panel2"} Usage Example
+      #panel2.content
+        %p Customize the options in this snippet below and track your users.
+        %pre _bm('event name', 'option', 'option')
+%br
+%div.row
+  %div.row
+    %div.large-12.columns
+      %p Filter events by date range
+      %form{:action => "/events/#{@site.code}/search", :method => :get}
+        %div.row
+          %div.large-4.columns
+            %input{:type => "text", :name => "date1", :id => "datepicker", :autocomplete => "off"}
+          %div.large-4.columns
+            %input{:type => "text", :name => "date2", :id => "datepicker2", :class => "small-4 columns", :autocomplete => "off"}
+          %div.large-4.columns
+            %input{:type => "submit", :value => "Search", :class => "button postfix"}
+  %table
+    %thead
+      %th Event Name
+      %th Event Property
+      %th Event Property
+      %th Event Created At
+    %tbody
+      -@events.each do |event|
+        %tr
+          %td= event.name
+          %td= event.property1
+          %td= event.property2
+          %td= event.created_at.localtime
 %script
   var picker = new Pikaday({field: document.getElementById('datepicker'),onSelect: function(date){document.getElementById('datepicker').value=moment(date).format("YYYY-MM-DD");}});
   picker.setDate("#{@date1}");

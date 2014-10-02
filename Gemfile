@@ -8,10 +8,6 @@ gem 'bson_ext'
 gem 'sinatra-contrib'
 gem 'sinatra-flash'
 gem 'haml'
-gem 'sass'
-gem 'bourbon'
-gem 'bitters'
-gem 'neat'
 
 group :test do
   gem 'pry'

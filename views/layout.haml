@@ -2,18 +2,38 @@
 %html
   %head
     %title Blocmetrics
+    %link{:href => "/stylesheets/foundation.min.css", :rel => "stylesheet"}
     %link{:href => "/stylesheets/application.css", :rel => "stylesheet"}
     %link{:href => "/stylesheets/pikaday.css", :rel => "stylesheet"}
     %script{:src => "/js/pikaday.js", :type => "text/javascript"}
     %script{:src => "/js/moment.min.js", :type => "text/javascript"}
+    %script{:src => "/js/vendor/jquery.js", :type => "text/javascript"}
+    %script{:src => "/js/foundation.min.js", :type => "text/javascript"}
   %body
-    .user-info
-      - if session[:current_user_email]
-        Welcome #{session[:current_user_email]} |
-        %form{:action => "/users/sign-out", :method => "post"}
-          %input{:type => "submit", :value => "Sign Out"}
-      - else
-        %a{:href => "/users/sign-up"} Sign Up
-        %a{:href => "/users/sign-in"} Sign In
-    = styled_flash
-    = yield
+    %nav.top-bar{"data-topbar" => "", :role => "navigation"}
+      %ul.title-area
+        %li.name
+          %h1
+            %a{:href => "#"} Blocmetris
+        %li.toggle-topbar.menu-icon
+          %a{:href => "#"}
+            %span Menu
+      %section.top-bar-section
+        %ul.right.user-info
+          - if session[:current_user_email]
+            %li
+              %a Welcome #{session[:current_user_email]}
+            %li.has-form
+              %form{:action => "/users/sign-out", :method => "post"}
+                %input{:type => "submit", :value => "Sign Out", :class => "button"}
+          - else
+            %li
+              %a{:href => "/users/sign-up"} Sign Up
+            %li
+              %a{:href => "/users/sign-in"} Sign In
+    %div.row
+      = styled_flash
+    %div.row
+      = yield
+    %script
+      $(document).foundation();

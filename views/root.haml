@@ -1,4 +1,5 @@
 Hello World #{@page_count}
+%br
 - if current_user
   %a{:href => "/site/new"} Add Site
 - if @sites
@@ -8,3 +9,4 @@ Hello World #{@page_count}
   #sites
     - @sites.each do |site|
       %a{:href => "/events/#{site["code"]}"}= site["url"]
+      %br
