@@ -20,7 +20,7 @@ class EventMapper
 
   def to_event_objects(results)
     results.map do |result|
-      Event.new(result["code"], result["name"], result["property1"], result["property2"], result["_id"])
+      Event.new(result["code"], result["name"], result["property1"], result["property2"], result["created_at"], result["_id"])
     end
   end
 end

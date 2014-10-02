@@ -30,7 +30,7 @@ describe "Events", :type => :feature do
   end
 
   it "should be viewable" do
-    Timecop.freeze(Time.now) do
+    Timecop.freeze(Time.new(2014, 10, 1, 7, 40)) do
       UserMapper.new($db).persist(user)
       SiteMapper.new($db).persist(site)
 
@@ -49,7 +49,7 @@ describe "Events", :type => :feature do
       expect(page).to have_content("event name")
       expect(page).to have_content("2")
       expect(page).to have_content("6")
-      expect(page).to have_content(Time.now)
+      expect(page).to have_content(Time.new(2014, 10, 1, 7, 40))
     end
   end
 end

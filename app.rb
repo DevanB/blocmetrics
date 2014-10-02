@@ -18,6 +18,7 @@ class App < Sinatra::Base
   SECONDS_IN_DAY = 86400
   enable :sessions
   register Sinatra::Flash
+  set :static, true
 
   configure :development do
     register Sinatra::Reloader
@@ -129,9 +130,9 @@ class App < Sinatra::Base
 
   get '/events/:code/search' do
     @site = SiteMapper.new($db).find_by_code(params[:code])
-    date1 = parse_date(params[:date1])
-    date2 = parse_date(params[:date2]) + SECONDS_IN_DAY
-    @events = EventMapper.new($db).find_events_within_dates(date1, date2)
+    @date1 = parse_date(params[:date1])
+    @date2 = parse_date(params[:date2]) + SECONDS_IN_DAY
+    @events = EventMapper.new($db).find_events_within_dates(@date1, @date2)
     haml :"/events/show", :layout => :layout
   end
 

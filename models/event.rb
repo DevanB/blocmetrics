@@ -1,9 +1,9 @@
 class Event
   attr_accessor :id, :code, :name, :property1, :property2, :created_at
 
-  def initialize(code, name, property1 = nil, property2 = nil, id = nil)
+  def initialize(code, name, property1 = nil, property2 = nil, created_at = nil, id = nil)
     @code, @name, @property1, @property2, @id = code, name, property1, property2, id
-    @created_at = Time.now
+    @created_at = created_at || Time.now
   end
 
   def ==(object)

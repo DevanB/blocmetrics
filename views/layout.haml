@@ -2,7 +2,10 @@
 %html
   %head
     %title Blocmetrics
-    %link{:href => "public/stylesheets/application.css", :rel => "stylesheet"}
+    %link{:href => "/stylesheets/application.css", :rel => "stylesheet"}
+    %link{:href => "/stylesheets/pikaday.css", :rel => "stylesheet"}
+    %script{:src => "/js/pikaday.js", :type => "text/javascript"}
+    %script{:src => "/js/moment.min.js", :type => "text/javascript"}
   %body
     .user-info
       - if session[:current_user_email]

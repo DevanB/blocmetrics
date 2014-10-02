@@ -6,13 +6,31 @@ Events
 %p Customize the options in this snippet below and track your users.
 %pre _bm('event name', 'option', 'option')
 
-- @events.each do |event|
-  %p= event.name
-  %p= event.property1
-  %p= event.property2
-  %p= event.created_at
+%h4 Events for #{@site.url}
 
+%table
+  %thead
+    %th Event Name
+    %th Event Property
+    %th Event Property
+    %th Event Created At
+  %tbody
+    -@events.each do |event|
+      %tr
+        %td= event.name
+        %td= event.property1
+        %td= event.property2
+        %td= event.created_at.localtime
+
+%h4 Search event date range
 %form{:action => "/events/#{@site.code}/search", :method => :get}
-  %input{:type => "text", :name => "date1"}
-  %input{:type => "text", :name => "date2"}
+  %input{:type => "text", :name => "date1", :id => "datepicker", :autocomplete => "off"}
+  %input{:type => "text", :name => "date2", :id => "datepicker2", :autocomplete => "off"}
   %input{:type => "submit", :value => "Search"}
+
+
+%script
+  var picker = new Pikaday({field: document.getElementById('datepicker'),onSelect: function(date){document.getElementById('datepicker').value=moment(date).format("YYYY-MM-DD");}});
+  picker.setDate("#{@date1}");
+  var picker2 = new Pikaday({field: document.getElementById('datepicker2'),onSelect: function(date){document.getElementById('datepicker2').value=moment(date).format("YYYY-MM-DD");}});
+  picker2.setDate("#{@date2}");
