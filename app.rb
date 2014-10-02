@@ -113,7 +113,7 @@ class App < Sinatra::Base
   end
 
   post '/events' do
-    cross_origin
+    cross_origin :allow_origin => :any
     if !SiteMapper.new($db).find_by_code(params[:code])
       status 404
     else
