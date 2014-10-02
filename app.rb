@@ -2,7 +2,6 @@ require 'sinatra/base'
 require 'sinatra/reloader'
 require 'sinatra/flash'
 require 'haml'
-require 'sinatra/cross_origin'
 
 require_relative 'database'
 require_relative 'models/user'
