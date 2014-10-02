@@ -113,7 +113,6 @@ class App < Sinatra::Base
   end
 
   post '/events' do
-    cross_origin :allow_origin => :any
     if !SiteMapper.new($db).find_by_code(params[:code])
       status 404
     else
@@ -121,6 +120,7 @@ class App < Sinatra::Base
       EventMapper.new($db).persist(event)
     end
     ""
+    response.headers['Access-Control-Allow-Origin'] = '*'
   end
 
   get '/events/:code' do
