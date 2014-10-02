@@ -12,6 +12,7 @@ gem 'sass'
 gem 'bourbon'
 gem 'bitters'
 gem 'neat'
+gem 'sinatra-cross_origin', '~> 0.3.1'
 
 group :test do
   gem 'pry'

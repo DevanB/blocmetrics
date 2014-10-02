@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'sinatra/reloader'
 require 'sinatra/flash'
 require 'haml'
+require 'sinatra/cross_origin'
 
 require_relative 'database'
 require_relative 'models/user'
@@ -18,7 +19,6 @@ class App < Sinatra::Base
   SECONDS_IN_DAY = 86400
   enable :sessions
   register Sinatra::Flash
-  set :static, true
 
   configure :development do
     register Sinatra::Reloader
@@ -113,6 +113,7 @@ class App < Sinatra::Base
   end
 
   post '/events' do
+    cross_origin
     if !SiteMapper.new($db).find_by_code(params[:code])
       status 404
     else
