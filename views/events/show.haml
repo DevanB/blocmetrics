@@ -15,6 +15,8 @@
         %pre _bm('event name', 'option', 'option')
 %br
 %div.row
+  %canvas{:id => "myChart", :width => "400", :height => "400"}
+%div.row
   %div.row
     %div.large-12.columns
       %p Filter events by date range
@@ -39,8 +41,12 @@
           %td= event.property1
           %td= event.property2
           %td= event.created_at.localtime
+%br
+%p= @chartData
 %script
   var picker = new Pikaday({field: document.getElementById('datepicker'),onSelect: function(date){document.getElementById('datepicker').value=moment(date).format("YYYY-MM-DD");}});
   document.getElementById('datepicker').value=moment("#{@date1.to_date}").format("YYYY-MM-DD");
   var picker2 = new Pikaday({field: document.getElementById('datepicker2'),onSelect: function(date){document.getElementById('datepicker2').value=moment(date).format("YYYY-MM-DD");}});
   document.getElementById('datepicker2').value=moment("#{@date2.to_date}").format("YYYY-MM-DD");
+  var ctx = document.getElementById("myChart").getContext("2d");
+  var myChart = new Chart(ctx).Pie(#{@chartData.to_json},{segmentShowStroke : true});

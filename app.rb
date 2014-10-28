@@ -2,12 +2,14 @@ require 'sinatra/base'
 require 'sinatra/reloader'
 require 'sinatra/flash'
 require 'haml'
+require 'json'
 
 require_relative 'database'
 require_relative 'models/user'
 require_relative 'models/site'
 require_relative 'models/validation_error'
 require_relative 'models/event'
+require_relative 'models/analytic'
 require_relative 'mappers/user_mapper'
 require_relative 'mappers/site_mapper'
 require_relative 'mappers/event_mapper'
@@ -28,6 +30,7 @@ class App < Sinatra::Base
     also_reload 'models/user.rb'
     also_reload 'models/site.rb'
     also_reload 'models/validation_error.rb'
+    also_reload 'models/analytic.rb'
   end
 
   before '/site/new' do
@@ -127,6 +130,7 @@ class App < Sinatra::Base
     @events = EventMapper.new($db).find_events_for_code(@site.code)
     @date1 = Date.today-7
     @date2 = Date.today
+    @chartData = Analytic.new(@events).group_by_name
     haml :"/events/show", :layout => :layout
   end
 
@@ -135,6 +139,7 @@ class App < Sinatra::Base
     @date1 = parse_date(params[:date1])
     @date2 = parse_date(params[:date2])
     @events = EventMapper.new($db).find_events_within_dates(@date1, @date2 + SECONDS_IN_DAY)
+    @chartData = Analytic.new(@events).group_by_name
     haml :"/events/show", :layout => :layout
   end
 
